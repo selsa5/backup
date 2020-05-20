@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="UTF-8">
+<link rel="apple-touch-icon" type="image/png" href="https://static.codepen.io/assets/favicon/apple-touch-icon-5ae1a0698dcc2402e9712f7d01ed509a57814f994c660df9f7a952f3060705ee.png">
+<meta name="apple-mobile-web-app-title" content="CodePen">
+<link rel="shortcut icon" type="image/x-icon" href="https://static.codepen.io/assets/favicon/favicon-aec34940fbc1a6e787974dcd360f2c6b63348d4b1f4e06c77743096d55480f33.ico">
+<link rel="mask-icon" type="" href="https://static.codepen.io/assets/favicon/logo-pin-8f3771b1072e3c38bd662872f6b673a722f4b3ca2421637d5596661b4e2132cc.svg" color="#111">
+<title>Chiffre César</title>
+<style>
+body {
+  padding: 50px 0;
+  margin: 0;
+  background-color: #eee;
+  font-family: consolas, monospace;
+}
+
+.container {
+  background: white;
+  max-width: 75%;
+  margin: 0 auto;
+  padding: 15px;
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.12), 3px 3px 6px rgba(0,0,0,0.24);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.subheader {
+  text-transform: uppercase;
+  font-size: 14px;
+}
+
+.color-red {
+  color: red;
+}
+
+.color-blue {
+  color: blue;
+}
+
+input {
+  padding: 0.5rem;
+  font-size: 16px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+
+.user-input {
+  min-width: 50%;
+}
+
+.cipher-output {
+  min-height: 38px;
+  border-left: 10px solid;
+  padding-left: 15px;
+}
+.breaking{
+  width:500px;
+  word-wrap: break-word;
+}
+</style>
+<script>
+  window.console = window.console || function(t) {};
+</script>
+<script>
+  if (document.location.search.match(/type=embed/gi)) {
+    window.parent.postMessage("resize", "*");
+  }
+</script>
+</head>
+<body translate="no">
+<div class="container">
+<h1 class="text-center">Chiffre César</h1>
+<h2 class="subheader color-red">Chiffrer</h2>
+<p>Entrer un message et un nombre de décalage</p>
+<input id="userEncodeInput" class="user-input" type="text">
+<input id="cipherEncodeKey" type="number" min="0" max="25" value="0">
+<p class="cipher-output color-red" id="cipherEncodeOutput"></p>
+<hr>
+<h2 class="subheader color-blue">Déchiffrer</h2>
+<p>Entrer un message chiffré et le nombre de décalage</p>
+<input id="userDecodeInput" class="user-input" type="text">
+<input id="cipherDecodeKey" type="number" min="0" max="25" value="0">
+<p class="cipher-output color-blue" id="cipherDecodeOutput"></p>
+</div>
+<script src="https://static.codepen.io/assets/common/stopExecutionOnTimeout-157cd5b220a5c80d4ff8e0e70ac069bffd87a61252088146915e8726e5d9f147.js"></script>
+<script id="rendered-js">
+const userEncodeInput = document.getElementById('userEncodeInput');
+const cipherEncodeKey = document.getElementById('cipherEncodeKey');
+const cipherEncodeOutput = document.getElementById('cipherEncodeOutput');
+const userDecodeInput = document.getElementById('userDecodeInput');
+const cipherDecodeKey = document.getElementById('cipherDecodeKey');
+const cipherDecodeOutput = document.getElementById('cipherDecodeOutput');
+const alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
+
+const caesarCipherEncode = (input, key = 0) => {
+  if (input.length === 0) {
+    cipherEncodeOutput.innerText = '';
+    return;
+  }
+  const splitInput = input.split('');
+  const testMap = splitInput.map(x => {
+
+    if (alphabet.indexOf(x.toLowerCase()) === -1) {
+
+      return ' ';
+    }
+
+
+    let y = parseInt(alphabet.indexOf(x.toLowerCase())) + parseInt(key);
+
+    if (y > 25) {
+      if (x === x.toUpperCase()) {
+        let output = alphabet[y - 26];
+        output = output.toUpperCase();
+        return output;
+      } else {
+        return alphabet[y - 26];
+      }
+    } else {
+      if (x === x.toUpperCase()) {
+        let output = alphabet[y];
+        output = output.toUpperCase();
+        return output;
+      } else {
+        return alphabet[y];
+      }
+    }
+  });
+  cipherEncodeOutput.innerText = testMap.join('');
+};
+
+userEncodeInput.oninput = () => {
+  caesarCipherEncode(userEncodeInput.value, cipherEncodeKey.value);
+};
+
+cipherEncodeKey.oninput = () => {
+  caesarCipherEncode(userEncodeInput.value, cipherEncodeKey.value);
+};
+
+const caesarCipherDecode = (input, key = 0) => {
+  if (input.length === 0) {
+    cipherDecodeOutput.innerText = '';
+    return;
+  }
+  const splitInput = input.split('');
+  const testMap = splitInput.map(x => {
+    if (alphabet.indexOf(x.toLowerCase()) === -1) {
+      return ' ';
+    }
+    let y = parseInt(alphabet.indexOf(x.toLowerCase())) - parseInt(key);
+    if (y < 0) {
+      if (x === x.toUpperCase()) {
+        let output = alphabet[26 + y];
+        output = output.toUpperCase();
+        return output;
+      } else {
+        return alphabet[26 + y];
+      }
+
+    } else {
+      if (x === x.toUpperCase()) {
+        let output = alphabet[y];
+        output = output.toUpperCase();
+        return output;
+      } else {
+        return alphabet[y];
+      }
+    }
+  });
+  cipherDecodeOutput.innerText = testMap.join('');
+};
+
+userDecodeInput.oninput = () => {
+  caesarCipherDecode(userDecodeInput.value, cipherDecodeKey.value);
+};
+
+cipherDecodeKey.oninput = () => {
+  caesarCipherDecode(userDecodeInput.value, cipherDecodeKey.value);
+};
+//# sourceURL=pen.js
+    </script>
+<script src="https://static.codepen.io/assets/editor/iframe/iframeRefreshCSS-e03f509ba0a671350b4b363ff105b2eb009850f34a2b4deaadaa63ed5d970b37.js"></script>
+
+
+</body></html>
